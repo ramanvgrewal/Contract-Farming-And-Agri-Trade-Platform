@@ -8,7 +8,7 @@ import com.agricontract.auth.entity.UserProfile;
 import com.agricontract.auth.mapper.UserMapper;
 import com.agricontract.auth.repository.UserRepository;
 import com.agricontract.common.exception.AppException;
-import com.agricontract.common.util.EmailService;
+//import com.agricontract.common.util.EmailService;
 import com.agricontract.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
-    private final EmailService emailService;
+    //private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -49,11 +49,11 @@ public class AuthService {
         User savedUser = userRepository.save(user);
         String token = jwtUtil.generateToken(savedUser);
 
-        try {
-            emailService.sendRegistrationEmail(savedUser.getEmail(), profile.getName());
-        } catch (Exception e) {
-            logger.error("Failed to send registration email to {}", savedUser.getEmail(), e);
-        }
+//        try {
+//            emailService.sendRegistrationEmail(savedUser.getEmail(), profile.getName());
+//        } catch (Exception e) {
+//            logger.error("Failed to send registration email to {}", savedUser.getEmail(), e);
+//        }
 
         return AuthResponse.builder()
                 .token(token)
@@ -71,11 +71,11 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(user);
 
-        try {
-            emailService.sendLoginEmail(user.getEmail(), user.getProfile().getName());
-        } catch (Exception e) {
-            logger.error("Failed to send login email to {}", user.getEmail(), e);
-        }
+//        try {
+//            emailService.sendLoginEmail(user.getEmail(), user.getProfile().getName());
+//        } catch (Exception e) {
+//            logger.error("Failed to send login email to {}", user.getEmail(), e);
+//        }
 
         return AuthResponse.builder()
                 .token(token)
