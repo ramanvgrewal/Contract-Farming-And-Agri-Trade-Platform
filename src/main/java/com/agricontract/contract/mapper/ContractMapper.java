@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface ContractMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "buyerId", source = "buyerId")
+    @Mapping(target = "buyerId", expression = "java(buyerId)")
     @Mapping(target = "filledQuantity", constant = "0.0")
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "commitments", ignore = true)

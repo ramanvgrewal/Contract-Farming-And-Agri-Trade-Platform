@@ -12,6 +12,7 @@ import com.agricontract.contract.mapper.ContractMapper;
 import com.agricontract.contract.repository.ContractRepository;
 import com.agricontract.contract.repository.FarmerCommitmentRepository;
 import com.agricontract.contract.service.ContractService;
+import com.agricontract.pricing.snapshot.repository.PriceSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,19 @@ public class ContractServiceImpl implements ContractService {
     private final ContractRepository contractRepository;
     private final FarmerCommitmentRepository commitmentRepository;
     private final ContractMapper contractMapper;
+    private final PriceSnapshotRepository priceSnapshotRepository;
 
     // ---------------- BUYER ----------------
 
     @Override
     public ContractResponse createContract(CreateContractRequest request, UUID buyerId) {
+
+        priceSnapshotRepository.findById(request.getPriceSnapshotId())
+                .orElseThrow(() -> new AppException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid price snapshot"
+                ));
+
 
         validateContractRequest(request);
 

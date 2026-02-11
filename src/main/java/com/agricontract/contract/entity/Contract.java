@@ -48,6 +48,9 @@ public class Contract {
     private Double offeredPriceMax;
 
     @Column(nullable = false)
+    private UUID priceSnapshotId;
+
+    @Column(nullable = false)
     private LocalDate contractStartDate;
 
     @Column(nullable = false)

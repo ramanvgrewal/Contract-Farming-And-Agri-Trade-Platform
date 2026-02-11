@@ -27,6 +27,7 @@ public class ContractResponse {
     private PriceType priceType;
     private Double offeredPriceMin;
     private Double offeredPriceMax;
+    private PriceSnapshotResponse priceSnapshot;
 
     private LocalDate contractStartDate;
     private LocalDate contractEndDate;

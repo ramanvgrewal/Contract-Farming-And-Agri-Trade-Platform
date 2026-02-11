@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class CreateContractRequest {
@@ -26,6 +27,8 @@ public class CreateContractRequest {
 
     @Positive
     private Double offeredPriceMax;
+
+    private UUID priceSnapshotId;
 
     @NotNull
     private LocalDate contractStartDate;
