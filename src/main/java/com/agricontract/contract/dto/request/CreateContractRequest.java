@@ -13,6 +13,9 @@ public class CreateContractRequest {
     @NotBlank
     private String cropName;
 
+    @NotBlank
+    private String state;
+
     private String cropVariety;
 
     @NotNull
@@ -27,8 +30,6 @@ public class CreateContractRequest {
 
     @Positive
     private Double offeredPriceMax;
-
-    private UUID priceSnapshotId;
 
     @NotNull
     private LocalDate contractStartDate;

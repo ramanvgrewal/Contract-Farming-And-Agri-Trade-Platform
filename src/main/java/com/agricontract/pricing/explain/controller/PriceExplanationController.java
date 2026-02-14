@@ -34,8 +34,6 @@ public class PriceExplanationController {
                         crop, state, harvestStartMonth, harvestEndMonth
                 );
 
-        priceSnapshotPersistenceService.save(snapshot);
-
         String explanation =
                 priceExplanationService.explain(snapshot);
 

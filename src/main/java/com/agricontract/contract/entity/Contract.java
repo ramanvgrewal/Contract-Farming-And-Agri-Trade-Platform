@@ -32,6 +32,9 @@ public class Contract {
     @Column(nullable = false)
     private String cropName;
 
+    @Column(nullable = false)
+    private String state;
+
     private String cropVariety;
 
     @Column(nullable = false)

@@ -12,7 +12,11 @@ import com.agricontract.contract.mapper.ContractMapper;
 import com.agricontract.contract.repository.ContractRepository;
 import com.agricontract.contract.repository.FarmerCommitmentRepository;
 import com.agricontract.contract.service.ContractService;
+import com.agricontract.pricing.snapshot.dto.AIPriceSnapshot;
+import com.agricontract.pricing.snapshot.entity.PriceSnapshotEntity;
 import com.agricontract.pricing.snapshot.repository.PriceSnapshotRepository;
+import com.agricontract.pricing.snapshot.service.AIPriceSnapshotService;
+import com.agricontract.pricing.snapshot.service.PriceSnapshotPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,23 +33,30 @@ public class ContractServiceImpl implements ContractService {
     private final ContractRepository contractRepository;
     private final FarmerCommitmentRepository commitmentRepository;
     private final ContractMapper contractMapper;
-    private final PriceSnapshotRepository priceSnapshotRepository;
+    private final AIPriceSnapshotService aiPriceSnapshotService;
+    private final PriceSnapshotPersistenceService priceSnapshotPersistenceService;
 
     // ---------------- BUYER ----------------
 
     @Override
     public ContractResponse createContract(CreateContractRequest request, UUID buyerId) {
 
-        priceSnapshotRepository.findById(request.getPriceSnapshotId())
-                .orElseThrow(() -> new AppException(
-                        HttpStatus.BAD_REQUEST,
-                        "Invalid price snapshot"
-                ));
-
-
         validateContractRequest(request);
 
+        // 1. Generate snapshot internally
+        AIPriceSnapshot snapshot = aiPriceSnapshotService.forContract(
+                request.getCropName(),
+                request.getState(),
+                request.getContractStartDate().getMonthValue(),
+                request.getContractEndDate().getMonthValue()
+        );
+
+        // 2. Persist snapshot
+        PriceSnapshotEntity persistedSnapshot = priceSnapshotPersistenceService.save(snapshot);
+
+        // 3. Create contract
         Contract contract = contractMapper.toEntity(request, buyerId);
+        contract.setPriceSnapshotId(persistedSnapshot.getId());
         contract.setStatus(ContractStatus.CREATED);
 
         Contract saved = contractRepository.save(contract);

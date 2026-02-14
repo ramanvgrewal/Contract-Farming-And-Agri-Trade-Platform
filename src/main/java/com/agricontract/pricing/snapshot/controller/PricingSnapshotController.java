@@ -35,16 +35,11 @@ public class PricingSnapshotController {
     ) {
 
         // Calculate snapshot (business logic)
-        AIPriceSnapshot snapshot =
-                aiPriceSnapshotService.forContract(
-                        crop,
-                        state,
-                        harvestStartMonth,
-                        harvestEndMonth
-                );
-
-        priceSnapshotPersistenceService.save(snapshot);
-
-        return snapshot;
+        return aiPriceSnapshotService.forContract(
+                crop,
+                state,
+                harvestStartMonth,
+                harvestEndMonth
+        );
     }
 }
