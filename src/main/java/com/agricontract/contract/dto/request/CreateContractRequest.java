@@ -32,10 +32,17 @@ public class CreateContractRequest {
     private Double offeredPriceMax;
 
     @NotNull
-    private LocalDate contractStartDate;
+    @Min(1)
+    @Max(12)
+    private Integer harvestStartMonth;
 
     @NotNull
-    private LocalDate contractEndDate;
+    @Min(1)
+    @Max(12)
+    private Integer harvestEndMonth;
+
+    private LocalDate harvestDate;
+
 
     // Location (optional)
     private Boolean locationRequired = false;

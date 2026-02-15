@@ -20,6 +20,8 @@ public class PriceSnapshotMapper {
                 .fairMinPrice(dto.getFairMinPrice())
                 .fairMaxPrice(dto.getFairMaxPrice())
                 .unit(dto.getUnit())
+                .harvestStartMonth(dto.getHarvestStartMonth())
+                .harvestEndMonth(dto.getHarvestEndMonth())
                 .confidence(
                         PriceSnapshotEntity.ConfidenceLevel.valueOf(
                                 dto.getConfidence().name()

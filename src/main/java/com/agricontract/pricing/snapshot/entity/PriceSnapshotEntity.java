@@ -28,8 +28,10 @@ public class PriceSnapshotEntity {
 
     private double fairMinPrice;
     private double fairMaxPrice;
-
     private String unit;
+
+    private Integer harvestStartMonth;
+    private Integer harvestEndMonth;
 
     @Enumerated(EnumType.STRING)
     private ConfidenceLevel confidence;

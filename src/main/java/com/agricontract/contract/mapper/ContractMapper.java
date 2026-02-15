@@ -26,6 +26,8 @@ public abstract class ContractMapper {
     @Mapping(target = "commitments", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "actualStartDate", ignore = true)
+    @Mapping(target = "actualEndDate", ignore = true)
     public abstract Contract toEntity(CreateContractRequest request, @Context UUID buyerId);
 
     @Mapping(target = "priceSnapshot", source = "priceSnapshotId", qualifiedByName = "mapSnapshot")

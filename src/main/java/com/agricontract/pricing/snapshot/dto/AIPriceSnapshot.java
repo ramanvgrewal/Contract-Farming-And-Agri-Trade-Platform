@@ -18,6 +18,9 @@ public class AIPriceSnapshot {
     private double fairMaxPrice;
     private String unit; // INR_PER_QUINTAL
 
+    private Integer harvestStartMonth;
+    private Integer harvestEndMonth;
+
     private ConfidenceLevel confidence;
 
     private List<String> reasonCodes;

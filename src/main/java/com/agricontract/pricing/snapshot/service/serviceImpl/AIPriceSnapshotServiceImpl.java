@@ -128,6 +128,8 @@ public class AIPriceSnapshotServiceImpl implements AIPriceSnapshotService {
                 .fairMinPrice(round(contractMin))
                 .fairMaxPrice(round(contractMax))
                 .unit("INR_PER_QUINTAL")
+                .harvestStartMonth(startMonth)
+                .harvestEndMonth(endMonth)
                 .confidence(confidenceFromVolatility(volatilityRatio))
                 .reasonCodes(reasons)
                 .build();

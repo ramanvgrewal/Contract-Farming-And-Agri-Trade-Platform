@@ -47,8 +47,8 @@ public class ContractServiceImpl implements ContractService {
         AIPriceSnapshot snapshot = aiPriceSnapshotService.forContract(
                 request.getCropName(),
                 request.getState(),
-                request.getContractStartDate().getMonthValue(),
-                request.getContractEndDate().getMonthValue()
+                request.getHarvestStartMonth(),
+                request.getHarvestEndMonth()
         );
 
         // 2. Persist snapshot
@@ -119,6 +119,24 @@ public class ContractServiceImpl implements ContractService {
         // Locking logic
         if (contract.getFilledQuantity().equals(contract.getRequiredQuantity())) {
             contract.setStatus(ContractStatus.LOCKED);
+
+            // Set actual dates
+            contract.setActualStartDate(java.time.LocalDate.now());
+
+            PriceSnapshotEntity snapshot = priceSnapshotPersistenceService.findById(contract.getPriceSnapshotId())
+                    .orElseThrow(() -> new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Snapshot not found"));
+
+            // Calculate duration
+            int startMonth = snapshot.getHarvestStartMonth();
+            int endMonth = snapshot.getHarvestEndMonth();
+
+            int months = 0;
+            if (startMonth <= endMonth) {
+                months = endMonth - startMonth;
+            } else {
+                months = (12 - startMonth) + endMonth;
+            }
+            contract.setActualEndDate(contract.getActualStartDate().plusMonths(months));
         } else {
             contract.setStatus(ContractStatus.PARTIALLY_FILLED);
         }
@@ -169,10 +187,6 @@ public class ContractServiceImpl implements ContractService {
     }
 
     private void validateContractRequest(CreateContractRequest request) {
-
-        if (request.getContractEndDate().isBefore(request.getContractStartDate())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Contract end date must be after start date");
-        }
 
         if (request.getPriceType().name().equals("RANGE")) {
             if (request.getOfferedPriceMin() == null || request.getOfferedPriceMax() == null) {

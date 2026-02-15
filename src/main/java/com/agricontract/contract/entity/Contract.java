@@ -53,11 +53,9 @@ public class Contract {
     @Column(nullable = false)
     private UUID priceSnapshotId;
 
-    @Column(nullable = false)
-    private LocalDate contractStartDate;
+    private LocalDate actualStartDate;
 
-    @Column(nullable = false)
-    private LocalDate contractEndDate;
+    private LocalDate actualEndDate;
 
     @Column(nullable = false)
     private boolean locationRequired;
