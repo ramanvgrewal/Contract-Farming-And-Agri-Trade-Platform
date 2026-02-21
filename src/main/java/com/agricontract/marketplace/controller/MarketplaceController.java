@@ -1,5 +1,6 @@
 package com.agricontract.marketplace.controller;
 
+import com.agricontract.marketplace.dto.BidPlacedDTO;
 import com.agricontract.marketplace.entity.MarketplaceBid;
 import com.agricontract.marketplace.entity.MarketplaceListing;
 import com.agricontract.marketplace.enums.ListingStatus;
@@ -10,6 +11,7 @@ import com.agricontract.marketplace.service.MarketplaceListingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,19 +59,19 @@ public class MarketplaceController {
     // ================= PLACE BID =================
 
     @PostMapping("/listings/{listingId}/bids")
-    public void placeBid(
+    public BidPlacedDTO placeBid(
             @PathVariable UUID listingId,
             @RequestParam UUID bidderId,
             @RequestParam Double bidAmount
     ) {
-        bidService.placeBid(listingId, bidderId, bidAmount);
+        return bidService.placeBid(listingId, bidderId, bidAmount);
     }
 
     // ================= GET ACTIVE LISTINGS =================
 
     @GetMapping("/listings/active")
     public List<MarketplaceListing> getActiveListings() {
-        return listingRepository.findByStatus(ListingStatus.OPEN);
+        return listingRepository.findByStatusIn(Arrays.asList(ListingStatus.OPEN, ListingStatus.LOCKED));
     }
 
     // ================= GET LOCKED LISTINGS =================

@@ -20,7 +20,7 @@
 
 body {
   margin: 0;
-  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at top left, #f7f1e3 0%, #eef4ea 45%, #f4efe6 100%);
   min-height: 100vh;
@@ -32,7 +32,7 @@ a {
 }
 
 h1, h2, h3, h4 {
-  font-family: "Fraunces", "Georgia", serif;
+  font-family: "DM Serif Display", "Georgia", serif;
   margin: 0 0 12px;
 }
 
@@ -133,6 +133,9 @@ nav a.active {
   color: white;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 12px 24px rgba(62, 92, 60, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn:hover {
@@ -170,6 +173,7 @@ nav a.active {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 36px;
   align-items: center;
+  animation: rise 0.6s ease both;
 }
 
 .hero-content h1 {
@@ -211,6 +215,7 @@ nav a.active {
   padding: 20px;
   border: 1px solid var(--stroke);
   box-shadow: var(--shadow);
+  animation: float 8s ease-in-out infinite;
 }
 
 .hero-card.farmer {
@@ -222,6 +227,7 @@ nav a.active {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 18px;
+  animation: rise 0.6s ease 0.1s both;
 }
 
 .feature {
@@ -347,6 +353,16 @@ input, select {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 18px;
   margin-bottom: 28px;
+  animation: rise 0.6s ease 0.15s both;
+}
+
+.marketplace .panel-grid {
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.marketplace .panel-grid > .card {
+  width: 100%;
 }
 
 .stat-card {
@@ -520,6 +536,36 @@ input, select {
   gap: 18px;
 }
 
+.landing {
+  position: relative;
+}
+
+.landing::before,
+.landing::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(0px);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+.landing::before {
+  width: 220px;
+  height: 220px;
+  background: rgba(47, 143, 111, 0.2);
+  top: -40px;
+  right: 12%;
+}
+
+.landing::after {
+  width: 280px;
+  height: 280px;
+  background: rgba(200, 139, 46, 0.2);
+  bottom: -80px;
+  left: 8%;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -546,6 +592,29 @@ input, select {
 
 .muted {
   color: var(--muted);
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 29, 26, 0.2);
+  border-top-color: var(--earth);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 900px) {

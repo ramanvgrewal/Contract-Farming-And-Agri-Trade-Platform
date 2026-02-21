@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   createListing,
   fetchActiveListings,
-  fetchLockedListings,
   placeBid
 } from "../api/marketplace.js";
 import { fetchMarketplaceSnapshot } from "../api/pricing.js";
@@ -12,7 +11,7 @@ import { EmptyState, InfoRow, Tag } from "../components/UI.jsx";
 export default function Marketplace() {
   const { token, user } = useAuth();
   const [activeListings, setActiveListings] = useState([]);
-  const [lockedListings, setLockedListings] = useState([]);
+  const [closedListings, setClosedListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [snapshot, setSnapshot] = useState(null);
@@ -29,12 +28,19 @@ export default function Marketplace() {
     async function loadListings() {
       setLoading(true);
       try {
-        const [active, locked] = await Promise.all([
-          fetchActiveListings(token),
-          fetchLockedListings(token)
-        ]);
-        setActiveListings(active || []);
-        setLockedListings(locked || []);
+        const active = await fetchActiveListings(token);
+        const listings = active || [];
+        const now = Date.now();
+        const isClosed = (listing) => {
+          if (listing.status === "CLOSED" || listing.status === "CANCELLED") return true;
+          if (listing.status === "LOCKED" && listing.biddingEndTime) {
+            return new Date(listing.biddingEndTime).getTime() <= now;
+          }
+          return false;
+        };
+
+        setActiveListings(listings.filter((listing) => !isClosed(listing)));
+        setClosedListings(listings.filter((listing) => isClosed(listing)));
       } catch (err) {
         setError(err.message || "Unable to load listings");
       } finally {
@@ -86,10 +92,21 @@ export default function Marketplace() {
     if (!bidAmount) return;
     setError("");
     try {
-      await placeBid(token, listingId, {
+      const response = await placeBid(token, listingId, {
         bidderId: user.id,
         bidAmount: Number(bidAmount)
       });
+      setActiveListings((prev) =>
+        prev.map((listing) =>
+          listing.id === listingId
+            ? {
+                ...listing,
+                currentHighestBid: response.currentHighestBidAmount,
+                highestBidderId: response.highestBidderId
+              }
+            : listing
+        )
+      );
     } catch (err) {
       setError(err.message || "Unable to place bid");
     }
@@ -203,17 +220,17 @@ export default function Marketplace() {
 
         <div className="card">
           <div className="card-header">
-            <h3>Locked listings</h3>
+            <h3>Closed listings</h3>
             <Tag tone="earth">Closed</Tag>
           </div>
-          {lockedListings.length === 0 ? (
+          {closedListings.length === 0 ? (
             <EmptyState
-              title="No locked listings"
-              body="When bidding closes, listings will appear here."
+              title="No closed listings"
+              body="When bidding closes or is cancelled, listings will appear here."
             />
           ) : (
             <div className="listing-grid">
-              {lockedListings.map((listing) => (
+              {closedListings.map((listing) => (
                 <div key={listing.id} className="listing-card">
                   <div className="listing-head">
                     <div>

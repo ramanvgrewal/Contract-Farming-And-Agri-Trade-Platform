@@ -15,6 +15,7 @@ export default function FarmerDashboard() {
   const [selected, setSelected] = useState(null);
   const [commitQty, setCommitQty] = useState("");
   const [explain, setExplain] = useState(null);
+  const [explainLoading, setExplainLoading] = useState(false);
   const [explainForm, setExplainForm] = useState({
     crop: "",
     state: "",
@@ -71,11 +72,14 @@ export default function FarmerDashboard() {
   async function handleExplain() {
     setActionError("");
     setExplain(null);
+    setExplainLoading(true);
     try {
       const response = await fetchContractExplanation(token, explainForm);
       setExplain(response);
     } catch (err) {
       setActionError(err.message || "Unable to fetch explanation");
+    } finally {
+      setExplainLoading(false);
     }
   }
 
@@ -214,8 +218,9 @@ export default function FarmerDashboard() {
                 ))}
               </select>
             </label>
-            <button className="btn ghost" onClick={handleExplain}>
-              Explain price
+            <button className="btn ghost" onClick={handleExplain} disabled={explainLoading}>
+              {explainLoading && <span className="loader" aria-hidden="true" />}
+              {explainLoading ? "Explaining..." : "Explain price"}
             </button>
             {explain && (
               <div className="explain-box">

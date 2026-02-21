@@ -1,6 +1,7 @@
 package com.agricontract.marketplace.service.serviceImpl;
 
 import com.agricontract.common.exception.AppException;
+import com.agricontract.marketplace.dto.BidPlacedDTO;
 import com.agricontract.marketplace.entity.MarketplaceBid;
 import com.agricontract.marketplace.entity.MarketplaceListing;
 import com.agricontract.marketplace.enums.ListingStatus;
@@ -24,7 +25,7 @@ public class MarketplaceBidServiceImpl implements MarketplaceBidService {
 
     @Override
     @Transactional
-    public void placeBid(UUID listingId, UUID bidderId, Double bidAmount) {
+    public BidPlacedDTO placeBid(UUID listingId, UUID bidderId, Double bidAmount) {
 
         MarketplaceListing listing = listingRepository.findById(listingId)
                 .orElseThrow(() ->
@@ -81,5 +82,9 @@ public class MarketplaceBidServiceImpl implements MarketplaceBidService {
         listing.setHighestBidderId(bidderId);
 
         listingRepository.save(listing);
+
+        return BidPlacedDTO.builder().
+                currentHighestBidAmount(bidAmount).
+                highestBidderId(bidderId).build();
     }
 }

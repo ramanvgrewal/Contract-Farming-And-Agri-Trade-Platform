@@ -1,8 +1,10 @@
 package com.agricontract.marketplace.service;
 
+import com.agricontract.marketplace.dto.BidPlacedDTO;
+
 import java.util.UUID;
 
 public interface MarketplaceBidService {
 
-    void placeBid(UUID listingId, UUID bidderId, Double bidAmount);
+    BidPlacedDTO placeBid(UUID listingId, UUID bidderId, Double bidAmount);
 }

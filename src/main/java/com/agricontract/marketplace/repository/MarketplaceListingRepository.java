@@ -17,4 +17,7 @@ public interface MarketplaceListingRepository
             ListingStatus status,
             Instant time
     );
+
+    List<MarketplaceListing> findByStatusIn(List<ListingStatus> statuses);
+
 }
