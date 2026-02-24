@@ -2,9 +2,9 @@ spring:
   application:
     name: agri-contract-platform
   datasource:
-    url: jdbc:postgresql://localhost:5432/agri_contract_db
-    username: postgres
-    password: Virendra@123
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -16,32 +16,21 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
     mongodb:
-      uri: mongodb://localhost:27017/agricontract
-      database: agric_contract_market
+      uri: ${SPRING_DATA_MONGODB_URI}
+      database: ${SPRING_DATA_MONGODB_DATABASE}
   ai:
-    ollama:
-      base-url: http://localhost:11434
+    openai:
+      api-key: ${GROQ_API_KEY}
+      base-url: https://api.groq.com/openai
       chat:
-        model: llama3
         options:
+          model: llama-3.3-70b-versatile
           temperature: 0.2
           top-p: 0.9
 
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: ramanvgrewal@gmail.com
-#    password: sanj noou kfek pdsg
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000 # 24 hours
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 
 logging:
   level:
