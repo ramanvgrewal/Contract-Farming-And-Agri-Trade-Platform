@@ -1,6 +1,6 @@
 # Environment
 .env
-
+!frontend/.env
 # Maven build output
 target/
 
