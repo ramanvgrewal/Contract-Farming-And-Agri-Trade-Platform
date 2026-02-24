@@ -1,10 +1,10 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npx vite build
+RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
