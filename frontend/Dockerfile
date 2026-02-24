@@ -3,9 +3,9 @@ FROM node:20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-RUN chmod +x node_modules/.bin/vite
 COPY . .
-RUN npm run build
+RUN chmod +x node_modules/.bin/vite
+RUN ./node_modules/.bin/vite build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
