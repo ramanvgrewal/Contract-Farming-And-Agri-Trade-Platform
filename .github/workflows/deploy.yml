@@ -37,7 +37,9 @@ jobs:
 
       - name: Build and push frontend
         run: |
-          docker build -t $ECR_REGISTRY/$FRONTEND_IMAGE:latest ./frontend
+          docker build \
+            --build-arg VITE_API_BASE_URL=http://${{ secrets.EC2_HOST }}:8080 \
+            -t $ECR_REGISTRY/$FRONTEND_IMAGE:latest ./frontend
           docker push $ECR_REGISTRY/$FRONTEND_IMAGE:latest
 
       - name: Deploy to EC2
