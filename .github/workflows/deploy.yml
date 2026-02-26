@@ -36,26 +36,29 @@ jobs:
           docker push $ECR_REGISTRY/$BACKEND_IMAGE:latest
 
       - name: Build and push frontend
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           docker build \
             --no-cache \
-            --build-arg VITE_API_BASE_URL=http://${{ secrets.EC2_HOST }}:8080 \
+            --build-arg VITE_API_BASE_URL=http://${EC2_HOST}:8080 \
             -t $ECR_REGISTRY/$FRONTEND_IMAGE:latest ./frontend
           docker push $ECR_REGISTRY/$FRONTEND_IMAGE:latest
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          timeout: 30s
+          command_timeout: 15m
           script: |
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
               docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-
             docker pull ${{ secrets.ECR_REGISTRY }}/savvyfarm-backend:latest
             docker pull ${{ secrets.ECR_REGISTRY }}/savvyfarm-frontend:latest
-
             cd /home/ubuntu
             docker-compose down
             docker-compose up -d
