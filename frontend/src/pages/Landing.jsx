@@ -1,57 +1,57 @@
 import { NavLink } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 export default function Landing() {
+  const { t } = useLanguage();
   return (
     <div className="landing">
       <section className="hero">
         <div className="hero-content">
-          <p className="eyebrow">SavvyFARM Contract Platform</p>
+          <p className="eyebrow">{t("hero.eyebrow")}</p>
           <h1>
-            Farm-to-buyer contracts that respect the field, protect margins, and
-            move with the season.
+            {t("hero.title")}
           </h1>
           <p className="lede">
-            Create price-aware contracts, invite farmers to commit, and use AI
-            pricing snapshots to keep every agreement transparent.
+            {t("hero.lede")}
           </p>
           <div className="hero-actions">
             <NavLink className="btn" to="/register">
-              Start as a buyer
+              {t("hero.cta.buyer")}
             </NavLink>
             <NavLink className="btn ghost" to="/register">
-              Join as a farmer
+              {t("hero.cta.farmer")}
             </NavLink>
           </div>
           <div className="hero-stats">
             <div>
               <strong>AI-driven</strong>
-              <span>market snapshots for every crop</span>
+              <span>{t("hero.stat.ai")}</span>
             </div>
             <div>
               <strong>Secure</strong>
-              <span>token-backed contract flow</span>
+              <span>{t("hero.stat.secure")}</span>
             </div>
             <div>
               <strong>Seasonal</strong>
-              <span>harvest windows modeled upfront</span>
+              <span>{t("hero.stat.seasonal")}</span>
             </div>
           </div>
         </div>
         <div className="hero-panel">
           <div className="hero-card">
-            <h3>Buyer workflow</h3>
+            <h3>{t("hero.workflow.buyer")}</h3>
             <ul>
-              <li>Create a contract with AI price ranges</li>
-              <li>Open it for farmer commitments</li>
-              <li>Track filled quantity and lock dates</li>
+              <li>{t("hero.workflow.buyer.1")}</li>
+              <li>{t("hero.workflow.buyer.2")}</li>
+              <li>{t("hero.workflow.buyer.3")}</li>
             </ul>
           </div>
           <div className="hero-card farmer">
-            <h3>Farmer workflow</h3>
+            <h3>{t("hero.workflow.farmer")}</h3>
             <ul>
-              <li>Review open contracts and fair price bands</li>
-              <li>Commit partial or full quantity</li>
-              <li>Lock in harvest schedule with clarity</li>
+              <li>{t("hero.workflow.farmer.1")}</li>
+              <li>{t("hero.workflow.farmer.2")}</li>
+              <li>{t("hero.workflow.farmer.3")}</li>
             </ul>
           </div>
         </div>
@@ -59,23 +59,21 @@ export default function Landing() {
 
       <section className="feature-grid">
         <div className="feature">
-          <h3>Price Explanation</h3>
+          <h3>{t("feature.explain.title")}</h3>
           <p>
-            Get a plain-language explanation alongside every AI snapshot, so
-            farmers and buyers understand the why.
+            {t("feature.explain.body")}
           </p>
         </div>
         <div className="feature">
-          <h3>Marketplace Pulse</h3>
+          <h3>{t("feature.market.title")}</h3>
           <p>
-            Browse active listings, place bids, and keep a record of every offer
-            without guesswork.
+            {t("feature.market.body")}
           </p>
         </div>
         <div className="feature">
-          <h3>Location Smart</h3>
+          <h3>{t("feature.location.title")}</h3>
           <p>
-            Enable or relax location requirements depending on crop logistics.
+            {t("feature.location.body")}
           </p>
         </div>
       </section>

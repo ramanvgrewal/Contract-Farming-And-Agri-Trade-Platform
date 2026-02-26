@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 const emptyForm = {
   name: "",
@@ -16,6 +17,7 @@ const emptyForm = {
 export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { t } = useLanguage();
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,8 +43,8 @@ export default function Register() {
   return (
     <div className="auth-page">
       <div className="auth-card wide">
-        <h2>Join the SavvyFARM network</h2>
-        <p>Choose your role and start building confident crop agreements.</p>
+        <h2>{t("register.title")}</h2>
+        <p>{t("register.subtitle")}</p>
         <form onSubmit={handleSubmit} className="grid-form">
           <label>
             Full name
@@ -86,12 +88,12 @@ export default function Register() {
           </label>
           {error && <div className="alert full">{error}</div>}
           <button className="btn full" disabled={busy}>
-            {busy ? "Creating account..." : "Create account"}
+            {busy ? t("register.busy") : t("register.button")}
           </button>
         </form>
         <div className="auth-foot">
-          <span>Already registered?</span>
-          <NavLink to="/login">Login</NavLink>
+          <span>{t("register.footer")}</span>
+          <NavLink to="/login">{t("register.footer.link")}</NavLink>
         </div>
       </div>
     </div>

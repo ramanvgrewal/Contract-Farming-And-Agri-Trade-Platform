@@ -27,7 +27,6 @@ spring:
           model: llama-3.3-70b-versatile
           temperature: 0.2
           top-p: 0.9
-
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}

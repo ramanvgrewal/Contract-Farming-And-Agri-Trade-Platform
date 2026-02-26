@@ -3,12 +3,15 @@ import { NavLink } from "react-router-dom";
 import { createContract, fetchBuyerContracts, openContract } from "../api/contracts.js";
 import { fetchContractSnapshot, fetchContractExplanation } from "../api/pricing.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { EmptyState, InfoRow, StatCard, Tag } from "../components/UI.jsx";
+import { formatUnit, getReasonLabel } from "../utils/format.js";
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
 export default function BuyerDashboard() {
   const { token, user } = useAuth();
+  const { t, lang } = useLanguage();
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
@@ -144,41 +147,40 @@ export default function BuyerDashboard() {
     <div className="dashboard buyer">
       <section className="dashboard-hero">
         <div>
-          <p className="eyebrow">Buyer workspace</p>
-          <h2>Welcome, {user?.name || "Buyer"}</h2>
+          <p className="eyebrow">{t("buyer.eyebrow")}</p>
+          <h2>{t("buyer.title")}, {user?.name || "Buyer"}</h2>
           <p>
-            Draft contracts, open them for farmers, and use AI price explanation
-            before you lock anything in.
+            {t("buyer.subtitle")}
           </p>
         </div>
         <div className="stat-grid">
-          <StatCard label="Total contracts" value={contractStats.total} />
-          <StatCard label="Open for acceptance" value={contractStats.open} />
-          <StatCard label="Locked" value={contractStats.locked} />
+          <StatCard label={t("buyer.stats.total")} value={contractStats.total} />
+          <StatCard label={t("buyer.stats.open")} value={contractStats.open} />
+          <StatCard label={t("buyer.stats.locked")} value={contractStats.locked} />
         </div>
       </section>
 
       <section className="panel-grid">
         <div className="card">
           <div className="card-header">
-            <h3>Create a contract</h3>
+            <h3>{t("buyer.card.create")}</h3>
             <Tag tone="gold">AI guided</Tag>
           </div>
           <form className="grid-form" onSubmit={handleCreate}>
             <label>
-              Crop name
+              {t("label.cropName")}
               <input name="cropName" value={form.cropName} onChange={updateForm} />
             </label>
             <label>
-              State
+              {t("label.state")}
               <input name="state" value={form.state} onChange={updateForm} />
             </label>
             <label>
-              Variety
+              {t("label.variety")}
               <input name="cropVariety" value={form.cropVariety} onChange={updateForm} />
             </label>
             <label>
-              Required quantity
+              {t("label.requiredQty")}
               <input
                 name="requiredQuantity"
                 type="number"
@@ -187,14 +189,14 @@ export default function BuyerDashboard() {
               />
             </label>
             <label>
-              Price type
+              {t("label.priceType")}
               <select name="priceType" value={form.priceType} onChange={updateForm}>
-                <option value="RANGE">Range</option>
-                <option value="FIXED">Fixed</option>
+                <option value="RANGE">{t("option.range")}</option>
+                <option value="FIXED">{t("option.fixed")}</option>
               </select>
             </label>
             <label>
-              Offered min price
+              {t("label.priceMin")}
               <input
                 name="offeredPriceMin"
                 type="number"
@@ -204,7 +206,7 @@ export default function BuyerDashboard() {
             </label>
             {form.priceType === "RANGE" && (
               <label>
-                Offered max price
+                {t("label.priceMax")}
                 <input
                   name="offeredPriceMax"
                   type="number"
@@ -214,13 +216,13 @@ export default function BuyerDashboard() {
               </label>
             )}
             <label>
-              Harvest start month
+              {t("label.harvestStart")}
               <select
                 name="harvestStartMonth"
                 value={form.harvestStartMonth}
                 onChange={updateForm}
               >
-                <option value="">Select</option>
+                <option value="">{t("option.select")}</option>
                 {monthOptions.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -229,13 +231,13 @@ export default function BuyerDashboard() {
               </select>
             </label>
             <label>
-              Harvest end month
+              {t("label.harvestEnd")}
               <select
                 name="harvestEndMonth"
                 value={form.harvestEndMonth}
                 onChange={updateForm}
               >
-                <option value="">Select</option>
+                <option value="">{t("option.select")}</option>
                 {monthOptions.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -244,7 +246,7 @@ export default function BuyerDashboard() {
               </select>
             </label>
             <label>
-              Harvest date (optional)
+              {t("label.harvestDate")}
               <input
                 name="harvestDate"
                 type="date"
@@ -259,12 +261,12 @@ export default function BuyerDashboard() {
                 checked={form.locationRequired}
                 onChange={updateForm}
               />
-              Require location match
+              {t("label.locationRequired")}
             </label>
             {form.locationRequired && (
               <>
                 <label>
-                  Latitude
+                  {t("label.latitude")}
                   <input
                     name="locationLat"
                     type="number"
@@ -273,7 +275,7 @@ export default function BuyerDashboard() {
                   />
                 </label>
                 <label>
-                  Longitude
+                  {t("label.longitude")}
                   <input
                     name="locationLng"
                     type="number"
@@ -282,7 +284,7 @@ export default function BuyerDashboard() {
                   />
                 </label>
                 <label>
-                  Radius (km)
+                  {t("label.radius")}
                   <input
                     name="locationRadiusKm"
                     type="number"
@@ -299,19 +301,19 @@ export default function BuyerDashboard() {
                 checked={form.clusterEnabled}
                 onChange={updateForm}
               />
-              Allow multiple farmers (cluster)
+              {t("label.cluster")}
             </label>
             {actionError && <div className="alert full">{actionError}</div>}
             <div className="form-actions full">
               <button type="button" className="btn ghost" onClick={handleSnapshot}>
-                Preview AI price
+                {t("buyer.button.preview")}
               </button>
               <button type="button" className="btn ghost" onClick={handleExplain} disabled={explainLoading}>
                 {explainLoading && <span className="loader" aria-hidden="true" />}
-                {explainLoading ? "Explaining..." : "Explain price"}
+                {explainLoading ? t("buyer.button.explaining") : t("buyer.button.explain")}
               </button>
               <button className="btn" disabled={busy}>
-                {busy ? "Creating..." : "Create contract"}
+                {busy ? t("buyer.button.creating") : t("buyer.button.create")}
               </button>
             </div>
           </form>
@@ -319,29 +321,35 @@ export default function BuyerDashboard() {
 
         <div className="card">
           <div className="card-header">
-            <h3>AI price insight</h3>
+            <h3>{t("buyer.card.insight")}</h3>
             <Tag tone="mint">Explain</Tag>
           </div>
           <div className="info-stack">
             {snapshot ? (
               <>
-                <InfoRow title="Fair min" value={`${snapshot.fairMinPrice || 0} ${snapshot.unit || ""}`} />
-                <InfoRow title="Fair max" value={`${snapshot.fairMaxPrice || 0} ${snapshot.unit || ""}`} />
-                <InfoRow title="Confidence" value={snapshot.confidence || 0} />
+                <InfoRow
+                  title={t("label.fairMin")}
+                  value={`${snapshot.fairMinPrice || 0} ${formatUnit(snapshot.unit, lang)}`}
+                />
+                <InfoRow
+                  title={t("label.fairMax")}
+                  value={`${snapshot.fairMaxPrice || 0} ${formatUnit(snapshot.unit, lang)}`}
+                />
+                <InfoRow title={t("label.confidence")} value={snapshot.confidence || 0} />
                 <div className="tag-list">
                   {(snapshot.reasonCodes || []).map((code) => (
                     <Tag key={code} tone="earth">
-                      {code}
+                      {getReasonLabel(code, lang)}
                     </Tag>
                   ))}
                 </div>
               </>
             ) : (
-              <p className="muted">Use "Preview AI price" to pull live pricing bands.</p>
+              <p className="muted">{t("text.previewHint")}</p>
             )}
             {explain && (
               <div className="explain-box">
-                <h4>Explanation</h4>
+                <h4>{t("label.explanation")}</h4>
                 <p>{explain.explanation}</p>
               </div>
             )}
@@ -351,16 +359,16 @@ export default function BuyerDashboard() {
 
       <section className="card">
         <div className="card-header">
-          <h3>Your contracts</h3>
+          <h3>{t("buyer.card.contracts")}</h3>
           <Tag tone="earth">Track</Tag>
         </div>
         {loading ? (
-          <p className="muted">Loading contracts...</p>
+          <p className="muted">{t("text.loadingContracts")}</p>
         ) : contracts.length === 0 ? (
           <EmptyState
-            title="No contracts yet"
-            body="Create your first contract and open it for farmer commitments."
-            action={<NavLink to="/buyer" className="btn ghost">Create now</NavLink>}
+            title={t("buyer.empty.title")}
+            body={t("buyer.empty.body")}
+            action={<NavLink to="/buyer" className="btn ghost">{t("buyer.empty.action")}</NavLink>}
           />
         ) : (
           <div className="contract-grid">
@@ -376,13 +384,14 @@ export default function BuyerDashboard() {
                   </Tag>
                 </div>
                 <div className="contract-meta">
-                  <InfoRow title="Required" value={contract.requiredQuantity} />
-                  <InfoRow title="Filled" value={contract.filledQuantity} />
-                  <InfoRow title="Price type" value={contract.priceType} />
+                  <InfoRow title={t("label.requiredQty")} value={contract.requiredQuantity} />
+                  <InfoRow title={t("label.filledQty")} value={contract.filledQuantity} />
+                  <InfoRow title={t("label.priceType")} value={contract.priceType} />
                 </div>
                 {contract.priceSnapshot && (
                   <div className="snapshot-mini">
-                    AI {contract.priceSnapshot.fairMinPrice} - {contract.priceSnapshot.fairMaxPrice}
+                    AI {contract.priceSnapshot.fairMinPrice} - {contract.priceSnapshot.fairMaxPrice}{" "}
+                    {formatUnit(contract.priceSnapshot.unit, lang)}
                   </div>
                 )}
                 <div className="contract-actions">

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -30,8 +32,8 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h2>Welcome back</h2>
-        <p>Log in to manage contracts, bids, and harvest schedules.</p>
+        <h2>{t("login.title")}</h2>
+        <p>{t("login.subtitle")}</p>
         <form onSubmit={handleSubmit}>
           <label>
             Email
@@ -48,12 +50,12 @@ export default function Login() {
           </label>
           {error && <div className="alert">{error}</div>}
           <button className="btn" disabled={busy}>
-            {busy ? "Signing in..." : "Login"}
+            {busy ? t("login.busy") : t("login.button")}
           </button>
         </form>
         <div className="auth-foot">
-          <span>New to SavvyFARM?</span>
-          <NavLink to="/register">Create an account</NavLink>
+          <span>{t("login.footer")}</span>
+          <NavLink to="/register">{t("login.footer.link")}</NavLink>
         </div>
       </div>
     </div>

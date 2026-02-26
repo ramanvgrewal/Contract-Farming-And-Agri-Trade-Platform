@@ -14,6 +14,27 @@
   --radius: 24px;
 }
 
+/* Role themes: adjust palette without touching logic */
+.app-shell.farmer-theme {
+  --bg: #f3f7f3;
+  --bg-alt: #e7f4ea;
+  --earth: #2e6d38;
+  --earth-dark: #1f4a26;
+  --mint: #2f8f6f;
+  --gold: #b98a2d;
+  --card: #ffffff;
+}
+
+.app-shell.buyer-theme {
+  --bg: #eef3f8;
+  --bg-alt: #e6f0f6;
+  --earth: #265f8f; /* primary accent becomes sky-ish */
+  --earth-dark: #1a4060;
+  --mint: #2c7da0; /* secondary accent */
+  --gold: #c28b3a;
+  --card: #ffffff;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -22,7 +43,7 @@ body {
   margin: 0;
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   color: var(--ink);
-  background: radial-gradient(circle at top left, #f7f1e3 0%, #eef4ea 45%, #f4efe6 100%);
+  background: radial-gradient(circle at top left, var(--bg) 0%, var(--bg-alt) 45%, var(--bg) 100%);
   min-height: 100vh;
 }
 
@@ -107,6 +128,31 @@ nav a.active {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.lang-toggle {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.lang-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.lang-btn.active {
+  background: var(--earth);
+  color: #fff;
 }
 
 .user-pill {
@@ -473,6 +519,10 @@ input, select {
   padding: 12px;
 }
 
+.explain-box p {
+  white-space: pre-line;
+}
+
 .empty-state {
   display: flex;
   justify-content: space-between;
@@ -615,6 +665,37 @@ input, select {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Role-specific component refinements */
+.app-shell.farmer-theme .top-nav {
+  background: rgba(231, 244, 234, 0.9);
+}
+.app-shell.buyer-theme .top-nav {
+  background: rgba(230, 240, 246, 0.9);
+}
+.app-shell.farmer-theme .btn {
+  background: linear-gradient(135deg, var(--earth), var(--mint));
+  border-radius: 999px;
+  box-shadow: 0 14px 26px rgba(46, 109, 56, 0.2);
+}
+.app-shell.farmer-theme .btn.ghost {
+  border: 1px solid rgba(46, 109, 56, 0.25);
+}
+.app-shell.buyer-theme .btn {
+  background: linear-gradient(135deg, var(--earth), var(--mint));
+  border-radius: 14px;
+  box-shadow: 0 14px 26px rgba(38, 95, 143, 0.18);
+}
+.app-shell.buyer-theme .btn.ghost {
+  border: 1px solid rgba(38, 95, 143, 0.25);
+}
+.app-shell.farmer-theme h1, .app-shell.farmer-theme h2, .app-shell.farmer-theme h3, .app-shell.farmer-theme h4 {
+  font-family: "DM Serif Display", "Georgia", serif;
+}
+.app-shell.buyer-theme h1, .app-shell.buyer-theme h2, .app-shell.buyer-theme h3, .app-shell.buyer-theme h4 {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  letter-spacing: 0.2px;
 }
 
 @media (max-width: 900px) {

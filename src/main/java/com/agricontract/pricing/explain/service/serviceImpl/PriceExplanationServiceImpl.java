@@ -30,22 +30,29 @@ public class PriceExplanationServiceImpl
         return """
         You are an agricultural pricing assistant.
 
-        Explain the given price recommendation in simple, neutral language.
-        Do not invent data.
-        Do not give financial advice.
-        Only explain the provided reasons.
+        Explain the given price recommendation in simple, neutral language for farmers and buyers.
+        Do not invent data. Do not give financial advice. Only explain the provided reasons.
+        Return two sections with labels "English:" and "Hindi:".
+        Use plain text, no markdown. Write 2-4 sentences per language.
+
+        Explanation guidance:
+        - If mode is CONTRACT: fairMin is based on seasonal average and fairMax on the upper band.
+          Both are adjusted with a risk premium (5/10/15 percent) depending on seasonal volatility.
+          Higher volatility means a higher premium. Mention this only at a high level unless a reason
+          code indicates high variance.
+        - If mode is MARKETPLACE: start from seasonal bands and adjust for arrivals pressure and
+          short-term price trend. Volatility affects confidence.
+        - Reference the reason codes where relevant.
 
         Context:
         - Crop: %s
         - State: %s
-        - Price range: ₹%.2f to ₹%.2f per quintal
+        - Price range: INR %.2f to INR %.2f per quintal
         - Confidence: %s
         - Mode: %s
 
         Reason codes:
         %s
-
-        Write 2–3 sentences.
         """.formatted(
                 s.getCrop(),
                 s.getState(),

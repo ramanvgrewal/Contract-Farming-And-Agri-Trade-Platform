@@ -6,10 +6,13 @@ import {
 } from "../api/marketplace.js";
 import { fetchMarketplaceSnapshot } from "../api/pricing.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { EmptyState, InfoRow, Tag } from "../components/UI.jsx";
+import { formatUnit } from "../utils/format.js";
 
 export default function Marketplace() {
   const { token, user } = useAuth();
+  const { t, lang } = useLanguage();
   const [activeListings, setActiveListings] = useState([]);
   const [closedListings, setClosedListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,47 +123,45 @@ export default function Marketplace() {
     <div className="marketplace">
       <section className="dashboard-hero">
         <div>
-          <p className="eyebrow">Marketplace</p>
-          <h2>Live crop listings & competitive bids</h2>
-          <p>
-            Buyers can bid on active listings, farmers can post fresh harvests
-            with AI-backed base prices.
-          </p>
+          <p className="eyebrow">{t("market.eyebrow")}</p>
+          <h2>{t("market.title")}</h2>
+          <p>{t("market.subtitle")}</p>
         </div>
         {user?.role === "FARMER" && (
           <div className="card compact">
-            <h4>Post a listing</h4>
+            <h4>{t("market.post.title")}</h4>
             <form className="grid-form" onSubmit={handleCreate}>
               <label>
-                Crop
+                {t("label.crop")}
                 <input name="crop" value={form.crop} onChange={updateForm} />
               </label>
               <label>
-                State
+                {t("label.state")}
                 <input name="state" value={form.state} onChange={updateForm} />
               </label>
               <label>
-                Variety
+                {t("label.variety")}
                 <input name="variety" value={form.variety} onChange={updateForm} />
               </label>
               <label>
-                Quantity
+                {t("label.quantity")}
                 <input name="quantity" type="number" value={form.quantity} onChange={updateForm} />
               </label>
               <label>
-                Unit
+                {t("label.unit")}
                 <input name="unit" value={form.unit} onChange={updateForm} />
               </label>
               <div className="form-actions full">
                 <button type="button" className="btn ghost" onClick={handleSnapshot}>
-                  AI snapshot
+                  {t("market.button.snapshot")}
                 </button>
-                <button className="btn">Create listing</button>
+                <button className="btn">{t("market.button.create")}</button>
               </div>
             </form>
             {snapshot && (
               <div className="snapshot-mini">
-                Fair range: {snapshot.fairMinPrice} - {snapshot.fairMaxPrice} {snapshot.unit}
+                {t("label.fairRange")}: {snapshot.fairMinPrice} - {snapshot.fairMaxPrice}{" "}
+                {formatUnit(snapshot.unit, lang)}
               </div>
             )}
           </div>
@@ -172,15 +173,15 @@ export default function Marketplace() {
       <section className="panel-grid">
         <div className="card">
           <div className="card-header">
-            <h3>Active listings</h3>
+            <h3>{t("market.active")}</h3>
             <Tag tone="gold">Open</Tag>
           </div>
           {loading ? (
             <p className="muted">Loading listings...</p>
           ) : activeListings.length === 0 ? (
             <EmptyState
-              title="No active listings"
-              body="Farmers will add listings shortly."
+              title={t("market.empty.active.title")}
+              body={t("market.empty.active.body")}
             />
           ) : (
             <div className="listing-grid">
@@ -193,12 +194,9 @@ export default function Marketplace() {
                     </div>
                     <Tag tone="mint">{listing.status}</Tag>
                   </div>
-                  <InfoRow title="Quantity" value={`${listing.quantity} ${listing.unit}`} />
-                  <InfoRow title="Base price" value={listing.basePrice} />
-                  <InfoRow
-                    title="Current bid"
-                    value={listing.currentHighestBid || listing.basePrice}
-                  />
+                  <InfoRow title={t("label.quantity")} value={`${listing.quantity} ${listing.unit}`} />
+                  <InfoRow title={t("label.basePrice")} value={listing.basePrice} />
+                  <InfoRow title={t("label.currentBid")} value={listing.currentHighestBid || listing.basePrice} />
                   {user?.role === "BUYER" && (
                     <div className="bid-row">
                       <input
@@ -208,7 +206,7 @@ export default function Marketplace() {
                         onChange={(event) => updateBid(listing.id, event.target.value)}
                       />
                       <button className="btn" onClick={() => handleBid(listing.id)}>
-                        Place bid
+                        {t("market.bid.place")}
                       </button>
                     </div>
                   )}
@@ -220,13 +218,13 @@ export default function Marketplace() {
 
         <div className="card">
           <div className="card-header">
-            <h3>Closed listings</h3>
+            <h3>{t("market.closed")}</h3>
             <Tag tone="earth">Closed</Tag>
           </div>
           {closedListings.length === 0 ? (
             <EmptyState
-              title="No closed listings"
-              body="When bidding closes or is cancelled, listings will appear here."
+              title={t("market.empty.closed.title")}
+              body={t("market.empty.closed.body")}
             />
           ) : (
             <div className="listing-grid">

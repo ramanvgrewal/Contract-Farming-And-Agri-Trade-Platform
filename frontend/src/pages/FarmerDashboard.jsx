@@ -3,12 +3,15 @@ import { NavLink } from "react-router-dom";
 import { fetchOpenContracts, joinContract } from "../api/contracts.js";
 import { fetchContractExplanation } from "../api/pricing.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { EmptyState, InfoRow, StatCard, Tag } from "../components/UI.jsx";
+import { formatUnit, getReasonLabel } from "../utils/format.js";
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
 export default function FarmerDashboard() {
   const { token, user } = useAuth();
+  const { t, lang } = useLanguage();
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
@@ -92,31 +95,30 @@ export default function FarmerDashboard() {
     <div className="dashboard farmer">
       <section className="dashboard-hero">
         <div>
-          <p className="eyebrow">Farmer workspace</p>
-          <h2>Good day, {user?.name || "Farmer"}</h2>
+          <p className="eyebrow">{t("farmer.eyebrow")}</p>
+          <h2>{t("farmer.title")}, {user?.name || "Farmer"}</h2>
           <p>
-            Browse open contracts, review fair price explanations, and commit
-            only the quantity you can deliver.
+            {t("farmer.subtitle")}
           </p>
         </div>
         <div className="stat-grid">
-          <StatCard label="Open contracts" value={stats.open} />
-          <StatCard label="Total available" value={stats.total} />
+          <StatCard label={t("farmer.stats.open")} value={stats.open} />
+          <StatCard label={t("farmer.stats.total")} value={stats.total} />
         </div>
       </section>
 
       <section className="panel-grid">
         <div className="card">
           <div className="card-header">
-            <h3>Open contracts</h3>
+            <h3>{t("farmer.card.open")}</h3>
             <Tag tone="earth">Pick one</Tag>
           </div>
           {loading ? (
-            <p className="muted">Loading open contracts...</p>
+            <p className="muted">{t("text.loadingOpenContracts")}</p>
           ) : contracts.length === 0 ? (
             <EmptyState
-              title="No open contracts yet"
-              body="Buyers will post contracts soon. Check back later."
+              title={t("farmer.empty.title")}
+              body={t("farmer.empty.body")}
             />
           ) : (
             <div className="contract-list">
@@ -139,17 +141,17 @@ export default function FarmerDashboard() {
 
         <div className="card">
           <div className="card-header">
-            <h3>Commit to contract</h3>
+            <h3>{t("farmer.card.commit")}</h3>
             <Tag tone="mint">Secure</Tag>
           </div>
           {selected ? (
             <div className="info-stack">
-              <InfoRow title="Crop" value={selected.cropName} />
-              <InfoRow title="State" value={selected.state} />
-              <InfoRow title="Required" value={selected.requiredQuantity} />
-              <InfoRow title="Filled" value={selected.filledQuantity} />
+              <InfoRow title={t("label.crop")} value={selected.cropName} />
+              <InfoRow title={t("label.state")} value={selected.state} />
+              <InfoRow title={t("label.requiredQty")} value={selected.requiredQuantity} />
+              <InfoRow title={t("label.filledQty")} value={selected.filledQuantity} />
               <label>
-                Commit quantity
+                {t("label.commitQty")}
                 <input
                   type="number"
                   value={commitQty}
@@ -158,44 +160,45 @@ export default function FarmerDashboard() {
               </label>
               {selected.priceSnapshot && (
                 <div className="snapshot-mini">
-                  AI price: {selected.priceSnapshot.fairMinPrice} - {selected.priceSnapshot.fairMaxPrice}
+                  AI price: {selected.priceSnapshot.fairMinPrice} - {selected.priceSnapshot.fairMaxPrice}{" "}
+                  {formatUnit(selected.priceSnapshot.unit, lang)}
                 </div>
               )}
               {actionError && <div className="alert">{actionError}</div>}
               <button className="btn" onClick={handleJoin}>
-                Commit crop
+                {t("farmer.button.commit")}
               </button>
               <NavLink className="btn ghost" to={`/contracts/${selected.id}`}>
-                View contract
+                {t("farmer.button.view")}
               </NavLink>
             </div>
           ) : (
-            <p className="muted">Select a contract from the list to commit.</p>
+            <p className="muted">{t("text.selectContract")}</p>
           )}
         </div>
 
         <div className="card">
           <div className="card-header">
-            <h3>AI price explanation</h3>
+            <h3>{t("farmer.card.explain")}</h3>
             <Tag tone="earth">Transparent</Tag>
           </div>
           <div className="info-stack">
             <label>
-              Crop
+              {t("label.crop")}
               <input name="crop" value={explainForm.crop} onChange={updateExplainField} />
             </label>
             <label>
-              State
+              {t("label.state")}
               <input name="state" value={explainForm.state} onChange={updateExplainField} />
             </label>
             <label>
-              Harvest start month
+              {t("label.harvestStart")}
               <select
                 name="harvestStartMonth"
                 value={explainForm.harvestStartMonth}
                 onChange={updateExplainField}
               >
-                <option value="">Select</option>
+                <option value="">{t("option.select")}</option>
                 {monthOptions.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -204,13 +207,13 @@ export default function FarmerDashboard() {
               </select>
             </label>
             <label>
-              Harvest end month
+              {t("label.harvestEnd")}
               <select
                 name="harvestEndMonth"
                 value={explainForm.harvestEndMonth}
                 onChange={updateExplainField}
               >
-                <option value="">Select</option>
+                <option value="">{t("option.select")}</option>
                 {monthOptions.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -220,15 +223,23 @@ export default function FarmerDashboard() {
             </label>
             <button className="btn ghost" onClick={handleExplain} disabled={explainLoading}>
               {explainLoading && <span className="loader" aria-hidden="true" />}
-              {explainLoading ? "Explaining..." : "Explain price"}
+              {explainLoading ? t("farmer.button.explaining") : t("farmer.button.explain")}
             </button>
             {explain && (
               <div className="explain-box">
-                <h4>Snapshot</h4>
+                <h4>{t("label.snapshot")}</h4>
                 <p>
-                  Fair range: {explain.snapshot?.fairMinPrice || 0} - {explain.snapshot?.fairMaxPrice || 0} {explain.snapshot?.unit || ""}
+                  {t("label.fairRange")}: {explain.snapshot?.fairMinPrice || 0} - {explain.snapshot?.fairMaxPrice || 0}{" "}
+                  {formatUnit(explain.snapshot?.unit, lang)}
                 </p>
-                <h4>Explanation</h4>
+                <div className="tag-list">
+                  {(explain.snapshot?.reasonCodes || []).map((code) => (
+                    <Tag key={code} tone="earth">
+                      {getReasonLabel(code, lang)}
+                    </Tag>
+                  ))}
+                </div>
+                <h4>{t("label.explanation")}</h4>
                 <p>{explain.explanation}</p>
               </div>
             )}
