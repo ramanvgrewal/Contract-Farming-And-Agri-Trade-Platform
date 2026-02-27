@@ -7,7 +7,7 @@ import {
 import { fetchMarketplaceSnapshot } from "../api/pricing.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { EmptyState, InfoRow, Tag } from "../components/UI.jsx";
+import { EmptyState, InfoRow, Tag, Spinner } from "../components/UI.jsx";
 import { formatUnit } from "../utils/format.js";
 
 export default function Marketplace() {
@@ -17,6 +17,7 @@ export default function Marketplace() {
   const [closedListings, setClosedListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [snapshot, setSnapshot] = useState(null);
   const [bidInputs, setBidInputs] = useState({});
   const [form, setForm] = useState({
@@ -56,6 +57,7 @@ export default function Marketplace() {
   function updateForm(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
   async function handleSnapshot() {
@@ -68,7 +70,11 @@ export default function Marketplace() {
       });
       setSnapshot(response);
     } catch (err) {
-      setError(err.message || "Unable to fetch price snapshot");
+      if (err.errors) {
+        setFieldErrors(err.errors);
+      } else {
+        setError(err.message || "Unable to fetch price snapshot");
+      }
     }
   }
 
@@ -86,7 +92,11 @@ export default function Marketplace() {
       });
       setActiveListings((prev) => [response, ...prev]);
     } catch (err) {
-      setError(err.message || "Unable to create listing");
+      if (err.errors) {
+        setFieldErrors(err.errors);
+      } else {
+        setError(err.message || "Unable to create listing");
+      }
     }
   }
 
@@ -103,15 +113,20 @@ export default function Marketplace() {
         prev.map((listing) =>
           listing.id === listingId
             ? {
-                ...listing,
-                currentHighestBid: response.currentHighestBidAmount,
-                highestBidderId: response.highestBidderId
-              }
+              ...listing,
+              currentHighestBid: response.currentHighestBidAmount,
+              highestBidderId: response.highestBidderId
+            }
             : listing
         )
       );
     } catch (err) {
-      setError(err.message || "Unable to place bid");
+      if (err.errors) {
+        // Fallback for bidding inline errors if backend supports it
+        setError("Invalid bid: " + JSON.stringify(err.errors));
+      } else {
+        setError(err.message || "Unable to place bid");
+      }
     }
   }
 
@@ -134,22 +149,27 @@ export default function Marketplace() {
               <label>
                 {t("label.crop")}
                 <input name="crop" value={form.crop} onChange={updateForm} />
+                {fieldErrors.crop && <div className="field-error">{fieldErrors.crop}</div>}
               </label>
               <label>
                 {t("label.state")}
                 <input name="state" value={form.state} onChange={updateForm} />
+                {fieldErrors.state && <div className="field-error">{fieldErrors.state}</div>}
               </label>
               <label>
                 {t("label.variety")}
                 <input name="variety" value={form.variety} onChange={updateForm} />
+                {fieldErrors.variety && <div className="field-error">{fieldErrors.variety}</div>}
               </label>
               <label>
                 {t("label.quantity")}
                 <input name="quantity" type="number" value={form.quantity} onChange={updateForm} />
+                {fieldErrors.quantity && <div className="field-error">{fieldErrors.quantity}</div>}
               </label>
               <label>
                 {t("label.unit")}
                 <input name="unit" value={form.unit} onChange={updateForm} />
+                {fieldErrors.unit && <div className="field-error">{fieldErrors.unit}</div>}
               </label>
               <div className="form-actions full">
                 <button type="button" className="btn ghost" onClick={handleSnapshot}>
@@ -177,7 +197,7 @@ export default function Marketplace() {
             <Tag tone="gold">Open</Tag>
           </div>
           {loading ? (
-            <p className="muted">Loading listings...</p>
+            <Spinner text="Loading listings..." />
           ) : activeListings.length === 0 ? (
             <EmptyState
               title={t("market.empty.active.title")}

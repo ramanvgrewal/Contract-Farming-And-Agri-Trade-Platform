@@ -323,6 +323,12 @@ input, select {
   font-family: inherit;
 }
 
+.field-error {
+  color: #c84323;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
 .checkbox {
   grid-column: 1 / -1;
   display: flex;

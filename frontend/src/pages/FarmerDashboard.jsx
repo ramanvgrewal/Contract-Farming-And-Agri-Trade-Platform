@@ -4,7 +4,7 @@ import { fetchOpenContracts, joinContract } from "../api/contracts.js";
 import { fetchContractExplanation } from "../api/pricing.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { EmptyState, InfoRow, StatCard, Tag } from "../components/UI.jsx";
+import { EmptyState, InfoRow, StatCard, Tag, Spinner } from "../components/UI.jsx";
 import { formatUnit, getReasonLabel } from "../utils/format.js";
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -15,6 +15,7 @@ export default function FarmerDashboard() {
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [selected, setSelected] = useState(null);
   const [commitQty, setCommitQty] = useState("");
   const [explain, setExplain] = useState(null);
@@ -50,6 +51,7 @@ export default function FarmerDashboard() {
     setSelected(contract);
     setCommitQty("");
     setExplain(null);
+    setFieldErrors({});
     setExplainForm({
       crop: contract.cropName,
       state: contract.state,
@@ -68,7 +70,11 @@ export default function FarmerDashboard() {
       setContracts((prev) => prev.map((c) => (c.id === response.id ? response : c)));
       setSelected(response);
     } catch (err) {
-      setActionError(err.message || "Unable to join contract");
+      if (err.errors) {
+        setFieldErrors(err.errors);
+      } else {
+        setActionError(err.message || "Unable to join contract");
+      }
     }
   }
 
@@ -80,7 +86,11 @@ export default function FarmerDashboard() {
       const response = await fetchContractExplanation(token, explainForm);
       setExplain(response);
     } catch (err) {
-      setActionError(err.message || "Unable to fetch explanation");
+      if (err.errors) {
+        setFieldErrors(err.errors);
+      } else {
+        setActionError(err.message || "Unable to fetch explanation");
+      }
     } finally {
       setExplainLoading(false);
     }
@@ -89,6 +99,7 @@ export default function FarmerDashboard() {
   function updateExplainField(event) {
     const { name, value } = event.target;
     setExplainForm((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors({ ...fieldErrors, [name]: "" });
   }
 
   return (
@@ -114,7 +125,7 @@ export default function FarmerDashboard() {
             <Tag tone="earth">Pick one</Tag>
           </div>
           {loading ? (
-            <p className="muted">{t("text.loadingOpenContracts")}</p>
+            <Spinner text={t("text.loadingOpenContracts")} />
           ) : contracts.length === 0 ? (
             <EmptyState
               title={t("farmer.empty.title")}
@@ -155,8 +166,12 @@ export default function FarmerDashboard() {
                 <input
                   type="number"
                   value={commitQty}
-                  onChange={(event) => setCommitQty(event.target.value)}
+                  onChange={(event) => {
+                    setCommitQty(event.target.value);
+                    setFieldErrors({ ...fieldErrors, committedQuantity: "" });
+                  }}
                 />
+                {fieldErrors.committedQuantity && <div className="field-error">{fieldErrors.committedQuantity}</div>}
               </label>
               {selected.priceSnapshot && (
                 <div className="snapshot-mini">
@@ -186,10 +201,12 @@ export default function FarmerDashboard() {
             <label>
               {t("label.crop")}
               <input name="crop" value={explainForm.crop} onChange={updateExplainField} />
+              {fieldErrors.crop && <div className="field-error">{fieldErrors.crop}</div>}
             </label>
             <label>
               {t("label.state")}
               <input name="state" value={explainForm.state} onChange={updateExplainField} />
+              {fieldErrors.state && <div className="field-error">{fieldErrors.state}</div>}
             </label>
             <label>
               {t("label.harvestStart")}
@@ -220,6 +237,7 @@ export default function FarmerDashboard() {
                   </option>
                 ))}
               </select>
+              {fieldErrors.harvestEndMonth && <div className="field-error">{fieldErrors.harvestEndMonth}</div>}
             </label>
             <button className="btn ghost" onClick={handleExplain} disabled={explainLoading}>
               {explainLoading && <span className="loader" aria-hidden="true" />}
