@@ -32,3 +32,12 @@ export function EmptyState({ title, body, action }) {
     </div>
   );
 }
+
+export function Spinner({ text }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px', color: 'var(--muted)' }}>
+      <span className="loader"></span>
+      {text && <span>{text}</span>}
+    </div>
+  );
+}

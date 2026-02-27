@@ -9,21 +9,28 @@ export default function Login() {
   const { t } = useLanguage();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [busy, setBusy] = useState(false);
 
   function updateField(event) {
     setForm({ ...form, [event.target.name]: event.target.value });
+    setFieldErrors({ ...fieldErrors, [event.target.name]: "" });
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    setFieldErrors({});
     setBusy(true);
     try {
       await login(form);
       navigate("/app");
     } catch (err) {
-      setError(err.message || "Unable to login");
+      if (err.errors) {
+        setFieldErrors(err.errors);
+      } else {
+        setError(err.message || "Unable to login");
+      }
     } finally {
       setBusy(false);
     }
@@ -38,6 +45,7 @@ export default function Login() {
           <label>
             Email
             <input name="email" type="email" value={form.email} onChange={updateField} />
+            {fieldErrors.email && <div className="field-error">{fieldErrors.email}</div>}
           </label>
           <label>
             Password
@@ -47,6 +55,7 @@ export default function Login() {
               value={form.password}
               onChange={updateField}
             />
+            {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
           </label>
           {error && <div className="alert">{error}</div>}
           <button className="btn" disabled={busy}>
