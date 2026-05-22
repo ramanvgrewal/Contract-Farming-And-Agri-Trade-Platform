@@ -4,6 +4,7 @@ import com.agricontract.auth.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class RegisterRequest {
     @NotBlank(message = "Name is required")
     private String name;
 
+    @Size(min = 10, max = 10)
     private String phone;
     private String address;
     private String city;
